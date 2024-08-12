@@ -21,54 +21,54 @@
 load "$NCARG_ROOT/lib/ncarg/nclscripts/esmf/ESMF_regridding.ncl"
 
 
-begin  ;input parameter section
-    ;;;; parameters to specify the input file ;;;;;
-    gridname = "HadGEM2-ES_2deg"  ; I usualy gives a descrptive name for the grid   
-   
-    ;file name (latlonfile) and directory path (inputdir)for the input file, which 
-    ;contains lat, lon, and optionally masking arrays
-    inputdir ="/global/cfs/cdirs/m2637/ksa/HadGEM2-ES/mon"  
-    latlonfile = "ua_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc"
-    
-    ; more details about the target grid    
-    latname =  "lat" ; name of the variable lat in latlonfile
-    lonname =  "lon" ; name of the variable lon in latlonfile
-    GridType   = "rectilinear" ; "latlon", "unstructured"; "curvilinear" ; "rectilinear"
-    ;see this website for description:
-    ; https://climatedataguide.ucar.edu/climate-tools/regridding-overview
-    
-    isegional = False ; regional grid or not; False for global grid
-    
-    
-    
-    ;directory path, where to save the new SCRIP file for the target grid 
-    tgtSCRIPdir ="/pscratch/sd/k/ksa/temp/esmf"
-    
-    ;output SCRIP file name. 
-    tgtSCRIPfile = ("SCRIP_" + gridname + ".nc")
-     
-    
-    ;static missing data points?
-    MissingData = False           
-    MaskName_user = "NA" ;if True, what would be an appropriate name for the mask?
-    ;MaskName = "landmask"
-    
-    ;note that for missing values changing with time, we need a different approach to regrid
-    ; in that case I don't create static masks.
-    ; https://nco.sourceforge.net/nco.html#index-_005fFillValue
-    ; https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
-    
-    if(MissingData) then
-        MaskName = MaskName_user
-        tgtSCRIPfile = ("SCRIP_" + gridname + "_" + MaskName + ".nc")
-    else
-        MaskName = default_fillvalue("string")
-    end if
+;;;; parameters to specify the input file ;;;;;
+gridname = "HadGEM2-ES_2deg"  ; I usualy gives a descrptive name for the grid   
 
-end
+;file name (latlonfile) and directory path (inputdir)for the input file, which 
+;contains lat, lon, and optionally masking arrays
+inputdir ="/global/cfs/cdirs/m2637/ksa/HadGEM2-ES/mon"  
+latlonfile = "ua_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc"
+
+; more details about the target grid    
+latname =  "lat" ; name of the variable lat in latlonfile
+lonname =  "lon" ; name of the variable lon in latlonfile
+GridType   = "rectilinear" ; "latlon", "unstructured"; "curvilinear" ; "rectilinear"
+;see this website for description:
+; https://climatedataguide.ucar.edu/climate-tools/regridding-overview
+
+isegional = False ; regional grid or not; False for global grid
+
+;directory path, where to save the new SCRIP file for the target grid 
+tgtSCRIPdir ="/pscratch/sd/k/ksa/temp/esmf"
+
+;output SCRIP file name. 
+tgtSCRIPfile = ("SCRIP_" + gridname + ".nc")
+ 
+
+;static missing data points?
+MissingData = False           
+MaskName_user = "NA" ;if True, what would be an appropriate name for the mask?
+;MaskName = "landmask"
+
+;note that for missing values changing with time, we need a different approach to regrid
+; in that case I don't create static masks.
+; https://nco.sourceforge.net/nco.html#index-_005fFillValue
+; https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
+
+if(MissingData) then
+    MaskName = MaskName_user
+    tgtSCRIPfile = ("SCRIP_" + gridname + "_" + MaskName + ".nc")
+else
+    MaskName = default_fillvalue("string")
+end if
+
+
 ;----------------------------------------------------------------------
 ;  Generate a description file (SCRIP) for the target grid.
 ;----------------------------------------------------------------------
+
+print("gridname : " + gridname)
+
 ESMFOpt                = True
 ESMFOpt@ForceOverwrite = True
 ESMFOpt@Overwrite       = True
@@ -80,6 +80,8 @@ sfile = addfile((inputdir + "/" + latlonfile),"r")
 
 if(MissingData) then ; Necessary if x has STATIC missing values.
     ;change the output file name
+    print("taking care of static missing masks")
+
     tgtSCRIPfile = ("SCRIP_" + tgtres + "_" + MaskName + ".nc")
     
     ;an example for for ERA5 land-sea mask
@@ -123,6 +125,9 @@ else
         ilon := rm_single_dims(ilon) 
     end if
     
+end if
+
+print("running ESMF function")
 ; run the ESMF functions, defined for different types of grid
 if(GridType .eq. "latlon") then   ; uniform lat&lon grid, need to provide grid type
      print("calling latlon_to_SCRIP")
