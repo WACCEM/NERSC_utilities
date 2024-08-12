@@ -16,7 +16,9 @@
 
 ; on NERSC systems, NCL is not available as a single module.
 ; instead, load the climate-utils module, which makes NCL Version 6.6.2 available
-; %module load climate-utils
+; then invoke the NCL command along with this script name:
+; $> module load climate-utils
+; $> ncl NCLtomakeSCRIP.ncl
 ;----------------------------------------------------------------------
 load "$NCARG_ROOT/lib/ncarg/nclscripts/esmf/ESMF_regridding.ncl"
 
