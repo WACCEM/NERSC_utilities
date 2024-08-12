@@ -27,7 +27,7 @@ begin  ;input parameter section
    
     ;file name (latlonfile) and directory path (inputdir)for the input file, which 
     ;contains lat, lon, and optionally masking arrays
-    inputdir ="/global/cfs/cdirs/m2637/ksa/hadgem2-es/mon"  
+    inputdir ="/global/cfs/cdirs/m2637/ksa/HadGEM2-ES/mon"  
     latlonfile = "ua_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc"
     
     ; more details about the target grid    
