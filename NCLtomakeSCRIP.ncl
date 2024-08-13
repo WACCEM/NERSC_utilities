@@ -32,11 +32,26 @@ inputdir ="/global/cfs/cdirs/m2637/ksa/HadGEM2-ES/mon"
 latlonfile = "ua_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc"
 
 ; more details about the target grid    
-latname =  "lat" ; name of the variable lat in latlonfile
-lonname =  "lon" ; name of the variable lon in latlonfile
-GridType   = "rectilinear" ; "latlon", "unstructured"; "curvilinear" ; "rectilinear"
-;see this website for description:
+latname =  "lat" ; name of the variable lat in the latlonfile
+lonname =  "lon" ; name of the variable lon in the latlonfile
+
+GridType   = "rectilinear" ; choose from:
+;"rectilinear" 
+; most common grids described by one-dimensional latitude and longitude coordinates
+; https://www.ncl.ucar.edu/Document/glossary.shtml#R
+
+;"curvilinear" ; 
+; grids often used by regional models and satellites data where the coordinates are two-dimensional 
+; https://www.ncl.ucar.edu/Document/glossary.shtml#CurvilinearGrid
+
+;"unstructured"
+; not a typical 2-d grids in which grd boxes are ordered following the lat and lon coordinates
+; instead the grid coordinates require a list of nodes (connectivity information) 
+;https://www.ncl.ucar.edu/Document/glossary.shtml#UnstructuredGrid
+
+;see these websites for more information about different types of grids
 ; https://climatedataguide.ucar.edu/climate-tools/regridding-overview
+
 
 isegional = False ; regional grid or not; False for global grid
 
@@ -131,11 +146,7 @@ end if
 
 print("running ESMF function")
 ; run the ESMF functions, defined for different types of grid
-if(GridType .eq. "latlon") then   ; uniform lat&lon grid, need to provide grid type
-     print("calling latlon_to_SCRIP")
-     latlon_to_SCRIP((tgtSCRIPdir + "/" + tgtSCRIPfile),latlongridname,ESMFOpt) 
-     
-else if( GridType .eq. "rectilinear") then   ; non-uniform (can be) lat&lon grid
+if( GridType .eq. "rectilinear") then   ; non-uniform (can be) lat&lon grid
      print("calling rectilinear_to_SCRIP")
      rectilinear_to_SCRIP((tgtSCRIPdir + "/" + tgtSCRIPfile),ilat,ilon,ESMFOpt)
      
@@ -145,9 +156,7 @@ else if( GridType .eq. "curvilinear") then  ;---If we have 2D lat/lon arrays.
      
 else if( GridType .eq. "unstructured") then ;unstructured grids. Only SE mesh.
      unstructured_to_ESMF((tgtSCRIPdir + "/" + tgtSCRIPfile),ilat,ilon,ESMFOpt)
-     
-end if
-end if
+     end if
 end if
 end if
 
