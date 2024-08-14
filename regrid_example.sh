@@ -5,7 +5,7 @@ alias loade3sm='source /global/common/software/e3sm/anaconda_envs/load_latest_e3
 module loade3sm
 
 # Need to run the below command twice, one for each of the SCRIP files you want to generate 
-
+# need to comment the lines 27, 31, 32 in the NCLtomakeSCRIP.ncl script so that it accepts the command-line options for the gridname, inputdir, and latlonfile variables.
 # Generate input SCRIP
 # Change the three variables to point to your own directories and choose your own gridname 
 ncl NCLtomakeSCRIP.ncl 'gridname="ERA5-025"' 'inputdir="/pscratch/sd/s/smheflin/pyflex_era5_20/mcstracking/20200101.0000_20201231.0000/"' 'latlonfile="mcstrack_20200701_100000.nc"'  
